@@ -1,6 +1,8 @@
 import chromadb
 import ollama
 
+## Define a function to find relevant raw text chunks from ChromaDB
+
 def retrieve(query, n_results=5, collection_name="datamining"):
     # Connect to ChromaDB to get collection
     client = chromadb.PersistentClient(path="./chroma_db")

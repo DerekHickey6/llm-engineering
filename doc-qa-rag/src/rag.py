@@ -5,11 +5,11 @@ import os
 sys.path.append(os.getcwd())
 from src.retriever import retrieve
 
+## Orchestrates the whole pipeline
 ## Take Query -> Retrieve Chunks -> Build a prompt -> send to llama3.2
 
 def ask(query):
     chunks = retrieve(query=query)
-
     prompt = f"""
     Use the following context to answer the question.
 
@@ -17,9 +17,8 @@ def ask(query):
 
     Question: {query}
     """
-
+    # Extract Response
     response = ollama.chat(model="llama3.2", messages=[{"role": "user", "content": prompt}])
-
     response = response['message']['content']
 
     return response
