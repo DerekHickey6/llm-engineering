@@ -17,12 +17,14 @@ def ask(query):
 
     Question: {query}
     """
+
     # Extract Response
     response = ollama.chat(model="llama3.2", messages=[{"role": "user", "content": prompt}])
     response = response['message']['content']
 
     return response
 
+# Test
 if __name__ == "__main__":
     query = "how to i find association rules for a frequent 4-itemset?"
     print(ask(query))
