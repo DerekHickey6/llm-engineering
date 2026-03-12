@@ -34,7 +34,7 @@ def embed_chunks(chunks):
     return embeddings
 
 
-def create_db(chunks, embeddings, collection='datamining'):
+def store_db(chunks, embeddings, collection='datamining'):
     client = chromadb.PersistentClient('/chroma_db')
     collection = client.get_or_create_collection(name=collection)
 
@@ -47,4 +47,9 @@ def create_db(chunks, embeddings, collection='datamining'):
 def run_ingest(pdfpath):
     chunks = chunk_text(ingest(pdfpath))
 
-    return create_db(chunks, embed_chunks(chunks))
+    return store_db(chunks, embed_chunks(chunks))
+
+if __name__ == "__main__":
+    pdfpath = "C:\\Users\\derek\\Desktop\\llm-engineering\\dockerized-rag\\data\\Intro_to_Data_Mining.pdf"
+
+    run_ingest(pdfpath=pdfpath)
