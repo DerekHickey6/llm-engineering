@@ -1,7 +1,10 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel, Field
 from retriever import retriever
+from ingest import run_ingest
 import ollama
+import shutil
+import os
 
 api = FastAPI()
 
@@ -32,9 +35,19 @@ def ask_question(request: RequestModel):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Upload pdf
-from fastapi import UploadFile, File
-
+# Upload and ingest a PDF
 @api.post("/ingest")
 async def ingest_pdf(file: UploadFile = File(...)):
-    pass
+    try:
+        save_path = f"/app/data/{file.filename}"
+        os.makedirs("/app/data", exist_ok=True)
+
+        with open(save_path, "wb") as f:
+            shutil.copyfileobj(file.file, f)
+
+        run_ingest(save_path)
+
+        return {"message": f"{file.filename} ingested successfully"}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
