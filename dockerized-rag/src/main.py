@@ -1,8 +1,6 @@
-from urllib import response
-
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-from retriever import retrieve
+from retriever import retriever
 import ollama
 
 api = FastAPI()
@@ -18,12 +16,12 @@ class ResponseModel(BaseModel):
 def ask_question(request: RequestModel):
     try:
         query = request.question
-        chunks = retrieve(query)
-
+        chunks = retriever(query)
+        context = "\n\n".join(chunks)
         prompt = f"""
         Use the following context to answer the question.
 
-        Context:{"\n\n".join(chunks)}
+        Context:{context}
 
         Question: {query}
         """
@@ -33,3 +31,10 @@ def ask_question(request: RequestModel):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# Upload pdf
+from fastapi import UploadFile, File
+
+@api.post("/ingest")
+async def ingest_pdf(file: UploadFile = File(...)):
+    pass

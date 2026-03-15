@@ -50,6 +50,6 @@ def run_ingest(pdfpath):
     return store_db(chunks, embed_chunks(chunks))
 
 if __name__ == "__main__":
-    pdfpath = "C:\\Users\\derek\\Desktop\\llm-engineering\\dockerized-rag\\data\\Intro_to_Data_Mining.pdf"
+    pdfpath = "/app/data/Intro_to_Data_Mining.pdf"
 
     run_ingest(pdfpath=pdfpath)

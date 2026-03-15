@@ -1,0 +1,7 @@
+chromadb
+ollama
+chromadb
+uvicorn
+pydantic
+fastapi
+pypdf
