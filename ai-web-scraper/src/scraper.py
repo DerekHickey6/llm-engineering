@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def scrape_web(url, query):
+def scrape_web(url, query, truncate_size=5000):
     # Get response from HTTP Get request -> returns object with status_code, header + HTML text
     request_response = requests.get(url)
 
@@ -13,11 +13,12 @@ def scrape_web(url, query):
     soup = BeautifulSoup(request_response.text, "html.parser")
 
     # Exctracts text from DOM ( removes HTML tags )
-    text = soup.get_text()
+    cleaned_text = " ".join(soup.get_text().split())
+    truncated_text = cleaned_text[:truncate_size]
 
     # initialize the model
     model = ChatOllama(model="llama3.2",
-                       temperature=0.7)
+                       temperature=0.1)
 
     # initialize parser - converts AIMessage into plain string
     parser = StrOutputParser()
@@ -39,12 +40,13 @@ def scrape_web(url, query):
     chain = prompt | model | parser
 
     # Executes the pipeline / Chain
-    agent_reponse = chain.invoke({
-        "context": text,
+    agent_response = chain.invoke({
+        "context": truncated_text,
         "question": query
     })
 
-    print(agent_reponse)
+    print(agent_response)
+    return agent_response
 
 
 if __name__ == "__main__":
