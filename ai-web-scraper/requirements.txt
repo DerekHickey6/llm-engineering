@@ -1,4 +1,4 @@
-langchain_ollama
-langchain_core
+langchain-ollama
+langchain-core
 requests
-bs4
+beautifulsoup4
