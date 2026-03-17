@@ -1,11 +1,14 @@
 from mcp.server.fastmcp import FastMCP
 import requests
 from langchain_community.tools import DuckDuckGoSearchRun
+from langchain_ollama import ChatOllama
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
 
 mcp = FastMCP("my-server")
 
 @mcp.tool()
-def search_web(query):
+def search_web(query: str):
     """Searches web for query"""
     try:
         searcher = DuckDuckGoSearchRun()
@@ -16,7 +19,7 @@ def search_web(query):
         return "Search Failed. Please try again"
 
 @mcp.tool()
-def get_weather(city):
+def get_weather(city: str):
     """Gets weather for a given city"""
     # Extract longitude and latitude
     geo_response = requests.get(f"https://geocoding-api.open-meteo.com/v1/search?name={city}")
@@ -39,7 +42,26 @@ def get_weather(city):
     Wind Direction: {current_weather_dict['winddirection']} {current_weather_units_dict['winddirection']}
     """
 
+@mcp.tool()
+def summarize(text: str):
+    """Summarizes input text"""
+    # build LCEL chain
+    llm = ChatOllama(model="llama3.2",
+                     temperature=0.1)
+
+    prompt = ChatPromptTemplate.from_template("""
+    Summarize this {text}
+    """)
+
+    parser = StrOutputParser()
+
+    chain = prompt | llm | parser
+    response = chain.invoke({
+        "text": text
+    })
+
+    return response
 
 
 if __name__ == "__main__":
-    print(get_weather("Nanaimo"))
+    mcp.run()
