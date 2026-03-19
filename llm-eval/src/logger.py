@@ -20,4 +20,4 @@ def log_interaction(question: str, context: str, answer: str, latency: float, sc
         json_file.write(os.linesep)
 
 if __name__ == "__main__":
-    log_interaction("Who", "When", "Me", 3.14, {"score1": 1})
+    log_interaction("Who", "When", "Me", 3.14, {"score1"})
