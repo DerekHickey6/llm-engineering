@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-rag
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fastapi-rag
+  template:
+    metadata:
+      labels:
+        app: fastapi-rag
+    spec:
+      containers:
+        - name: fastapi-rag
+          image: fastapi-rag:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          env:
+            - name: OLLAMA_HOST
+              value: "http://ollama:11434"
