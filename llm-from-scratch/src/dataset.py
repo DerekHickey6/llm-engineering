@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+from tokenizer import encode
 
 def get_batch(data, block_size, batch_size):
     if not torch.is_tensor(data) or not data.dim() == 1:
@@ -12,4 +13,17 @@ def get_batch(data, block_size, batch_size):
     return x, y
 
 def load_data(filepath):
-    pass
+    with open(filepath, "r", encoding="utf-8") as f:
+        data = f.read()
+
+    encoded_data = torch.tensor(encode(data), dtype=torch.long)
+    return encoded_data
+
+if __name__ == "__main__":
+    data = load_data("data/input.txt")
+
+    print(len(data))
+
+    x, y = get_batch(data, batch_size=4, block_size=8)
+
+    print(x.shape, y.shape)
