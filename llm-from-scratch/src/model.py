@@ -47,6 +47,7 @@ class MultiHeadAttention(nn.Module):
 
 class FeedForward(nn.Module):
     def __init__(self, embed_dim):
+        """Initialize feedforward network with expand-and-compress MLP (4x hidden dim)."""
         super().__init__()
         self.net = nn.Sequential(
             nn.Linear(embed_dim, 4*embed_dim),
@@ -55,11 +56,13 @@ class FeedForward(nn.Module):
         )
 
     def forward(self, x):
+        """Pass x through the feedforward network and return the result."""
         return self.net(x)
 
 
 class TransformerBlock(nn.Module):
     def __init__(self, embed_dim, num_heads, block_size):
+        """Initialize transformer block with multi-head attention, feedforward, and layer norms."""
         super().__init__()
         head_size = embed_dim // num_heads
         self.attention = MultiHeadAttention(embed_dim, num_heads, head_size, block_size)
@@ -68,7 +71,7 @@ class TransformerBlock(nn.Module):
         self.ln2 = nn.LayerNorm(embed_dim)
 
     def forward(self, x):
-
+        """Apply attention and feedforward sublayers with residual connections and layer norm."""
         x = x + self.attention(self.ln1(x))
         x = x + self.ff(self.ln2(x))
         return x
