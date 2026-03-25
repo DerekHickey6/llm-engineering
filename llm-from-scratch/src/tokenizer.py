@@ -1,12 +1,15 @@
 import tiktoken
 
-def encode(text) -> list[int]:
+def encode(text: str) -> list[int]:
+    """Encode a string into a list of integer token IDs using GPT-2 BPE tokenizer."""
     enc = tiktoken.get_encoding("gpt2")
     token_integers = enc.encode(text)
 
     return token_integers
 
 def decode(tokens: list[int]) -> str:
+    """Decode a list of integer token IDs back into a string using GPT-2 BPE tokenizer."""
+    
     dec = tiktoken.get_encoding("gpt2")
     decoded_string = dec.decode(tokens)
 

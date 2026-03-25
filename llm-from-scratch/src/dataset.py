@@ -2,7 +2,9 @@ import numpy as np
 import torch
 from tokenizer import encode
 
-def get_batch(data, block_size, batch_size):
+def get_batch(data: torch.Tensor, block_size: int, batch_size: int) -> tuple[torch.Tensor, torch.Tensor]:
+    """Sample a random batch of input/target sequence pairs from the dataset."""
+
     if not torch.is_tensor(data) or not data.dim() == 1:
         raise ValueError("Data must be a 1D Tensor")
 
@@ -12,7 +14,9 @@ def get_batch(data, block_size, batch_size):
 
     return x, y
 
-def load_data(filepath):
+def load_data(filepath: str) -> torch.Tensor:
+    """Load a text file, encode it with the GPT-2 tokenizer, and return as a 1D tensor."""
+    
     with open(filepath, "r", encoding="utf-8") as f:
         data = f.read()
 

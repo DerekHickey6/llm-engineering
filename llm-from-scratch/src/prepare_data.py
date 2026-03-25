@@ -1,6 +1,8 @@
 from pathlib import Path
 
-def prepare_data(directory_path):
+def prepare_data(directory_path: str) -> None:
+    """Concatenate all .txt files in a directory into a single data/input.txt file."""
+    
     directory_path = Path(directory_path)
     with open("data/input.txt", "a", encoding="utf-8") as output_file:
 
