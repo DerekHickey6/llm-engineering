@@ -1,23 +1,6 @@
 import torch.nn as nn
 import torch
 
-class GPT(nn.Module):
-    def __init__(self, vocab_size, embed_dim, block_size):
-        """Initializes model with vocab size, embed dims & block size"""
-        super().__init__()
-        self.token_embedding = nn.Embedding(vocab_size, embed_dim)
-        self.position_embedding = nn.Embedding(block_size, embed_dim)
-
-    def forward(self, x):
-        """Forward pass -> looks up embeddings adds positional embeddings and returns combined representations"""
-        T = x.shape[1]
-
-        pos_ind = torch.arange(T)
-        tok_embed = self.token_embedding(x)
-        pos_embed = self.position_embedding(pos_ind)
-
-        return tok_embed + pos_embed
-
 class Head(nn.Module):
     def __init__(self, embed_dim, head_size, block_size):
         """Initizalizes attention head with embed_dim, head_Size and block size"""
@@ -62,5 +45,56 @@ class MultiHeadAttention(nn.Module):
         return self.proj(concat_output)
 
 
+class FeedForward(nn.Module):
+    def __init__(self, embed_dim):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(embed_dim, 4*embed_dim),
+            nn.ReLU(),
+            nn.Linear(4 * embed_dim, embed_dim)
+        )
+
+    def forward(self, x):
+        return self.net(x)
 
 
+class TransformerBlock(nn.Module):
+    def __init__(self, embed_dim, num_heads, block_size):
+        super().__init__()
+        head_size = embed_dim // num_heads
+        self.attention = MultiHeadAttention(embed_dim, num_heads, head_size, block_size)
+        self.ff = FeedForward(embed_dim)
+        self.ln1 = nn.LayerNorm(embed_dim)
+        self.ln2 = nn.LayerNorm(embed_dim)
+
+    def forward(self, x):
+
+        x = x + self.attention(self.ln1(x))
+        x = x + self.ff(self.ln2(x))
+        return x
+    
+
+class GPT(nn.Module):
+    def __init__(self, vocab_size, num_heads, num_layers, embed_dim, block_size):
+        """Initializes model with vocab size, embed dims & block size"""
+        super().__init__()
+        self.token_embedding = nn.Embedding(vocab_size, embed_dim)
+        self.position_embedding = nn.Embedding(block_size, embed_dim)
+
+        self.blocks = nn.Sequential(
+            *[TransformerBlock(embed_dim, num_heads, block_size) for _ in range(num_layers)]
+        )
+        self.ln_final = nn.LayerNorm(embed_dim)
+        self.output_head = nn.Linear(embed_dim, vocab_size)
+
+    def forward(self, x):
+        """Forward pass -> looks up embeddings adds positional embeddings and returns combined representations"""
+        T = x.shape[1]
+
+        pos_ind = torch.arange(T)
+        tok_embed = self.token_embedding(x)
+        pos_embed = self.position_embedding(pos_ind)
+
+        logits = self.output_head(self.ln_final(self.blocks(tok_embed + pos_embed)))
+
+        return logits
