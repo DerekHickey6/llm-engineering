@@ -47,11 +47,20 @@ class Head(nn.Module):
 
 class MultiHeadAttention(nn.Module):
     def __init__(self, embed_dim, num_heads, head_size, block_size):
+        """creates a ModuleList of attention heads"""
         super().__init__()
-        self.num_heads = num_heads
-        self.layers = nn.ModuleList()
 
-    def forward(Self, x):
+        self.heads = nn.ModuleList([Head(embed_dim, head_size, block_size) for _ in range(num_heads)])
+        self.proj = nn.Linear(embed_dim, embed_dim)
+
+    def forward(self, x):
+        """Feeds x through attention heads and concatenates them along last dim"""
+        output = [head(x) for head in self.heads]
+
+        concat_output = torch.cat(output, dim = -1)
+
+        return self.proj(concat_output)
+
 
 
 
