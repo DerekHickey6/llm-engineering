@@ -45,3 +45,4 @@ for epoch in tqdm(range(EPOCHS)):
     if epoch % 500 == 0:
         print(f"Step {epoch} | Loss: {loss.item():.4f}")
 
+torch.save(model.state_dict(), "models/model.pth")

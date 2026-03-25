@@ -75,12 +75,13 @@ class TransformerBlock(nn.Module):
         x = x + self.attention(self.ln1(x))
         x = x + self.ff(self.ln2(x))
         return x
-    
+
 
 class GPT(nn.Module):
     def __init__(self, vocab_size, num_heads, num_layers, embed_dim, block_size):
         """Initializes model with vocab size, embed dims & block size"""
         super().__init__()
+        self.block_size = block_size
         self.token_embedding = nn.Embedding(vocab_size, embed_dim)
         self.position_embedding = nn.Embedding(block_size, embed_dim)
 
