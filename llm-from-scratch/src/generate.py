@@ -1,7 +1,8 @@
 from tokenizer import encode, decode
 import torch
 
-def generate(model, prompt, max_new_tokens):
+def generate(model, prompt, max_new_tokens=200):
+    """Generates the response from model given the output length"""
     encoded_prompt = torch.tensor(encode(prompt)).unsqueeze(0)
     context = encoded_prompt
 

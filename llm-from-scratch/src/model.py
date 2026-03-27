@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch
 
+# Single attention head
 class Head(nn.Module):
     def __init__(self, embed_dim, head_size, block_size):
         """Initizalizes attention head with embed_dim, head_Size and block size"""
@@ -49,7 +50,7 @@ class FeedForward(nn.Module):
     def __init__(self, embed_dim):
         """Initialize feedforward network with expand-and-compress MLP (4x hidden dim)."""
         super().__init__()
-        self.net = nn.Sequential(
+        self.layers = nn.Sequential(
             nn.Linear(embed_dim, 4*embed_dim),
             nn.ReLU(),
             nn.Linear(4 * embed_dim, embed_dim)
@@ -57,7 +58,7 @@ class FeedForward(nn.Module):
 
     def forward(self, x):
         """Pass x through the feedforward network and return the result."""
-        return self.net(x)
+        return self.layers(x)
 
 
 class TransformerBlock(nn.Module):
