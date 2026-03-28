@@ -1,11 +1,11 @@
 from datasets import load_dataset
 from transformers import AutoTokenizer
 
+tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+
 def load_train_test_data(dataset: str):
     """Return: Train, Test splits"""
     dataset = load_dataset(dataset)
-
-    tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 
     def tokenize(examples):
         return tokenizer(examples["text"], truncation=True, padding=True)
